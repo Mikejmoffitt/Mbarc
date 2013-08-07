@@ -24,8 +24,10 @@ Mbarc::Mbarc()
 	pc = 0x00;
 	overFlow = false;
 	zeroFlag = false;
-	spill(true);
+	spill(false);
 }
+
+#define NUM_PER_LINE 8
 
 void Mbarc::spill(bool verbose)
 {
@@ -37,9 +39,9 @@ void Mbarc::spill(bool verbose)
 	if (verbose)
 	{
 		std::cout << std::endl << con::bg_blue << con::fg_white << "Literally all of the memory" << ":\t\t" << con::bg_black << std::endl << std::endl;
-		for (int i = 0; i < (UCHAR_MAX/4)+1; i++)
+		for (int i = 0; i < (UCHAR_MAX/NUM_PER_LINE)+1; i++)
 		{
-			for (int j = i*4; j < (i*4) + 4; j++)
+			for (int j = i*NUM_PER_LINE; j < (i*NUM_PER_LINE) + NUM_PER_LINE; j++)
 			{
 				if (pc == j)
 				{
@@ -53,7 +55,7 @@ void Mbarc::spill(bool verbose)
 				{
 					std::cout << con::bg_black;
 				}
-				std::cout << con::fg_cyan << " 0x" << con::fg_white << std::hex << j << con::fg_green << std::uppercase << " == " << con::fg_cyan << "0x" << con::fg_white << std::hex << int(memory[j]) << std::nouppercase << std::dec << "\t";
+				std::cout << con::fg_green << "0x" << std::hex << j << std::uppercase << ":" << con::fg_cyan << "" << con::fg_white << std::hex << int(memory[j]) << std::nouppercase << std::dec << "\t";
 				
 			}
 			std::cout << std::endl;
@@ -74,12 +76,13 @@ void Mbarc::poke(unsigned int addr, unsigned char val)
 
 void Mbarc::run()
 {
-	act(memory[pc], memory[(pc+1)%256], memory[(pc+2)%256]);
+	act(memory[pc], memory[(pc+1)], memory[(pc+2)]);
 }
 
 void Mbarc::act(unsigned char instr, unsigned char param1, unsigned char param2)
 {
 	unsigned char prev;
+	std::string outMsg = "";
 	switch (instr)
 	{
 	case NOP:
@@ -104,6 +107,7 @@ void Mbarc::act(unsigned char instr, unsigned char param1, unsigned char param2)
 		pc++;
 		pc++;
 		pc++;
+		break;
 	case SUB:
 		prev = memory[param2];
 		memory[param2] -= param1;
@@ -111,69 +115,88 @@ void Mbarc::act(unsigned char instr, unsigned char param1, unsigned char param2)
 		pc++;
 		pc++;
 		pc++;
+		break;
 	case MLT:
 		memory[param2] = memory[param2] * param1;
 		pc++;
 		pc++;
 		pc++;
+		break;
 	case DIV:
 		memory[param2] = memory[param2] / param1;
 		pc++;
 		pc++;
 		pc++;
+		break;
 	case CMP:
-		zeroFlag = (memory[param2] - param1) ? true : false;
+		zeroFlag = (memory[param2] == param1) ? true : false;
 		pc++;
 		pc++;
 		pc++;
+		break;
 	case SET:
 		memory[param2] = param1;
 		pc++;
 		pc++;
 		pc++;
+		break;
 	case AND:
 		memory[param2] = memory[param2] & param1;
 		pc++;
 		pc++;
 		pc++;
+		break;
 	case OR:
 		memory[param2] = memory[param2] | param1;
 		pc++;
 		pc++;
 		pc++;
+		break;
 	case BNE:
 		pc = zeroFlag ? pc : param1;
+		break;
 	case BEQ:
 		pc = zeroFlag ? param1 : pc;
+		break;
 	case JNE:
 		pc = zeroFlag ? pc : (pc + param1);
+		break;
 	case JEQ:
 		pc = zeroFlag ? (pc + param1) : pc;
+		break;
 	case LSL:
 		// Todo: use carry flag to capture the bit shifted out
 		memory[param1] = memory[param1] << 1;
 		pc++;
 		pc++;
+		break;
 	case LSR:
 		// Todo: use carry flag to capture the bit shifted out
 		memory[param1] = memory[param1] >> 1;
 		pc++;
 		pc++;
+		break;
 	case ZFC:
 		zeroFlag = false;
 		pc++;
+		break;
 	case ZFS:
 		zeroFlag = true;
 		pc++;
+		break;
 	case OFC:
 		overFlow = false;
 		pc++;
+		break;
 	case OFS:
 		overFlow = true;
 		pc++;
+		break;
 	case BRA:
 		pc = param1;
+		break;
 	case JMP:
 		pc += param1;
+		break;
 	}
 }
