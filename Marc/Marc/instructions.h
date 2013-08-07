@@ -11,7 +11,7 @@
 #define MLT 0x05 // 3 bytes; Multiply address 2 by address 1 WARNING: does not yet trip overflow
 #define DIV 0x06 // 3 bytes; Divide address 2 by address 1 WARNING: does not yet trip overflow
 #define CMP 0x07 // 3 bytes; Compare address 2 and 1; set zero flag if they are equal.
-#define SET 0x08 // 3 bytes; Put value 1 into address 2
+#define MOV 0x08 // 3 bytes; Put value 1 into address 2
 #define AND 0x09 // 3 bytes; Logical AND address 1 to address 2 
 #define OR  0x0A // 3 bytes; Logical OR address 1 to address 2
 #define BNE 0x0B // 2 bytes; Branch if !zeroFlag to address 1
@@ -27,5 +27,7 @@
 #define BRA 0x15 // 2 bytes; Branches to address 1
 #define JMP 0x16 // 2 bytes; Jumps to relativeaddress 1
 #define NCP 0x17 // 3 bytes; compare constant number 1 to address 2
+
+#define END 0xFF // 1 byte; program is over.
 
 #endif INSTRUCTIONS_H

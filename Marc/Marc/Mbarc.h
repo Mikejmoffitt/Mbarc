@@ -9,8 +9,11 @@ By Michael Moffitt
 #define MBARC_H
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <vector>
 #include <map>
+#include <limits>
+#include "instructions.h"
 #include <limits>
 
 class Mbarc
@@ -23,6 +26,7 @@ public:
 	void act(unsigned char instr, unsigned char param1, unsigned char param2);
 	void spill(bool verbose); // Prints status info, verbose prints EVERYTHING
 	void run();
+	bool isOver();
 private:
 	unsigned char memory[UCHAR_MAX+1];
 	unsigned char pc; // Program counter

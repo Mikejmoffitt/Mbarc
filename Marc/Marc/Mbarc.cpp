@@ -6,21 +6,12 @@ By Michael Moffitt
 */
 
 #include "Mbarc.h"
-#include "instructions.h"
-#include <limits>
-// Props to http://www.codeproject.com/Articles/9130/Add-Color-to-Console-Projects for this
-#include "Console.h"
-
-namespace con = JadedHoboConsole;
-
 Mbarc::Mbarc()
 {
-	std::cout << con::fg_green << con::bg_blue << "Starting up Mbarc!" << std::endl;
 	for (int i = 0; i < UCHAR_MAX+1; i++)
 	{
 		memory[i] = 0;
 	}
-	std::cout << con::bg_red << con::fg_white << "Memory zeroed out." << con::bg_black << std::endl;
 	pc = 0x00;
 	overFlow = false;
 	zeroFlag = false;
@@ -31,37 +22,32 @@ Mbarc::Mbarc()
 
 void Mbarc::spill(bool verbose)
 {
-	std::cout << std::endl << con::bg_blue << con::fg_white << "Status" << ":\t\t\t\t\t" << con::bg_black << std::endl;
-	std::cout << "  " << con::fg_white << "PC:\t\t " << con::fg_blue << "0x" << (int)pc << std::endl;
-	std::cout << "  " << con::fg_white << "Overflow:\t " << con::fg_green << overFlow << std::endl;
-	std::cout << "  " << con::fg_white << "Zero:\t\t " << con::fg_red << zeroFlag << std::endl;
-
+	std::cout << std::endl << "[Status]" << ":" << std::endl;
+	std::cout << "  " << "PC:\t\t " << "$" << std::hex << (int)pc << std::endl;
+	std::cout << "  " << "Overflow:\t " << overFlow << std::endl;
+	std::cout << "  " << "Zero:\t\t " << zeroFlag << std::endl;
+	std::stringstream lineStr;
 	if (verbose)
 	{
-		std::cout << std::endl << con::bg_blue << con::fg_white << "Literally all of the memory" << ":\t\t" << con::bg_black << std::endl << std::endl;
+		std::cout << std::endl << "[Literally all of the memory]" << ":" << std::endl << std::endl;
 		for (int i = 0; i < (UCHAR_MAX/NUM_PER_LINE)+1; i++)
 		{
 			for (int j = i*NUM_PER_LINE; j < (i*NUM_PER_LINE) + NUM_PER_LINE; j++)
 			{
 				if (pc == j)
 				{
-					std::cout << con::bg_red;
-				}
-				else if (j%2 == 0)
-				{
-					std::cout << con::bg_blue;
+					lineStr << "*$" << std::hex << j << std::uppercase << " " << std::hex << int(memory[j]) << std::nouppercase << std::dec << "\t";
 				}
 				else
 				{
-					std::cout << con::bg_black;
+					lineStr << " $" << std::hex << j << std::uppercase << " " << std::hex << int(memory[j]) << std::nouppercase << std::dec << "\t";
 				}
-				std::cout << con::fg_green << "0x" << std::hex << j << std::uppercase << ":" << con::fg_cyan << "" << con::fg_white << std::hex << int(memory[j]) << std::nouppercase << std::dec << "\t";
 				
 			}
-			std::cout << std::endl;
+			lineStr << std::endl;
 		}
 	}
-	std::cout << con::bg_black << con::fg_white << std::endl;
+	std::cout << lineStr.str() << std::endl;
 }
 
 unsigned char Mbarc::peek(unsigned int addr)
@@ -79,12 +65,19 @@ void Mbarc::run()
 	act(memory[pc], memory[(pc+1)], memory[(pc+2)]);
 }
 
+bool Mbarc::isOver()
+{
+	return (memory[pc] == 0xFF);
+}
+
 void Mbarc::act(unsigned char instr, unsigned char param1, unsigned char param2)
 {
 	unsigned char prev;
 	std::string outMsg = "";
 	switch (instr)
 	{
+	case END:
+		break;
 	case NOP:
 		pc++;
 		break;
@@ -140,7 +133,7 @@ void Mbarc::act(unsigned char instr, unsigned char param1, unsigned char param2)
 		pc++;
 		pc++;
 		break;
-	case SET:
+	case MOV:
 		memory[param2] = param1;
 		pc++;
 		pc++;
