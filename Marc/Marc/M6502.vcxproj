@@ -11,16 +11,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Marc.cpp" />
+    <ClCompile Include="Mbarc.cpp" />
     <ClCompile Include="usageTest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Console.h" />
     <ClInclude Include="instructions.h" />
-    <ClInclude Include="Marc.h" />
+    <ClInclude Include="Mbarc.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E82ADE63-C507-41C3-AB03-A93E4A35A8B0}</ProjectGuid>
     <RootNamespace>M6502</RootNamespace>
+    <ProjectName>MBark</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

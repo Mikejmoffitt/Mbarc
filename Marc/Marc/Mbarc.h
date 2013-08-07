@@ -11,18 +11,21 @@ By Michael Moffitt
 #include <string>
 #include <vector>
 #include <map>
+#include <limits>
 
 class Mbarc
 {
 public:
-	Mbarc(unsigned char* memory);
+	Mbarc();
 	unsigned char peek(unsigned int addr);
 	void poke(unsigned int addr, unsigned char val);
 	unsigned char getInstr(std::string friendlyName);
 	void act(unsigned char instr, unsigned char param1, unsigned char param2);
+	void spill(bool verbose); // Prints status info, verbose prints EVERYTHING
+	void run();
 private:
-	unsigned char *memory;
-	unsigned int pc; // Program counter
+	unsigned char memory[UCHAR_MAX+1];
+	unsigned char pc; // Program counter
 	bool zeroFlag;
 	bool overFlow;
 };

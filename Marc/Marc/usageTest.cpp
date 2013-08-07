@@ -2,25 +2,28 @@
 #include <iostream>
 #include <Windows.h>
 #include <limits>
-
-#define MEMAMT UCHAR_MAX
+#include "instructions.h"
 
 int main(int argc, char **argv)
 {
-	unsigned char mem[MEMAMT];
-	Mbarc core = Mbarc(mem);
-	for (int i = 0x0; i < MEMAMT; i++)
+	Mbarc core = Mbarc();
+
+
+	// Build a really simple program that does not do much
+	core.poke(0x0,NOP);
+	core.poke(0x1,INC);
+	core.poke(0x2,0x64);
+	core.poke(0x3,INC);
+	core.poke(0x4,0x64);
+	core.poke(0x5,BRA);
+	core.poke(0x6,0x0);
+
+	int what = 0;
+	while (what < 64)
 	{
-		mem[i] = 0;
+		core.run();
+		core.spill(true);
+		system("pause");
+		what++;
 	}
-	std::cout << "Memory zeroed out." << std::endl;
-	core.poke(0x32,0x80);
-	for (int i = 0x0; i < MEMAMT/4; i++)
-	{
-		std::cout << "0x" << std::hex << std::uppercase << (i*4) << " == 0x" << int((core.peek((i*4)))) << std::nouppercase << std::dec << "\t";
-		std::cout << "0x" << std::hex << std::uppercase << ((i*4)+1) << " == 0x" << int(core.peek((i*4)+1)) << std::nouppercase << std::dec << "\t";
-		std::cout << "0x" << std::hex << std::uppercase << ((i*4)+2) << " == 0x" << int(core.peek((i*4)+2)) << std::nouppercase << std::dec << "\t";
-		std::cout << "0x" << std::hex << std::uppercase << ((i*4)+3) << " == 0x" << int(core.peek((i*4)+3)) << std::nouppercase << std::dec << std::endl;
-	}
-	system("pause");
 }
