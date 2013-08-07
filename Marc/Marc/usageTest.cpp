@@ -1,4 +1,4 @@
-#include "Marc.h"
+#include "MBarc.h"
 #include <iostream>
 #include <Windows.h>
 
@@ -7,7 +7,7 @@
 int main(int argc, char **argv)
 {
 	unsigned char mem[MEMAMT];
-	Marc core = Marc(mem);
+	Mbarc core = Mbarc(mem);
 	for (int i = 0x0; i < MEMAMT; i++)
 	{
 		mem[i] = 0;

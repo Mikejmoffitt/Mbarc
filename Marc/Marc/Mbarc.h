@@ -5,17 +5,17 @@ By Michael Moffitt
 
 */
 
-#ifndef Marc_H
-#define Marc_H
+#ifndef MBARC_H
+#define MBARC_H
 #include <iostream>
 #include <string>
 #include <vector>
 #include <map>
 
-class Marc
+class Mbarc
 {
 public:
-	Marc(unsigned char* memory);
+	Mbarc(unsigned char* memory);
 	unsigned char peek(unsigned int addr);
 	void poke(unsigned int addr, unsigned char val);
 	unsigned char getInstr(std::string friendlyName);
@@ -26,4 +26,4 @@ private:
 	unsigned bool zeroFlag;
 };
 
-#endif MARC_H
+#endif MBARC_H
