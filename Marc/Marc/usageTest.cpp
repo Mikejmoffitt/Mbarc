@@ -1,8 +1,9 @@
 #include "MBarc.h"
 #include <iostream>
 #include <Windows.h>
+#include <limits>
 
-#define MEMAMT 0x64
+#define MEMAMT UCHAR_MAX
 
 int main(int argc, char **argv)
 {
