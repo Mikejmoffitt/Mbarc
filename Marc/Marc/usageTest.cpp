@@ -12,22 +12,29 @@ int main(int argc, char **argv)
 	
 	// Build a really simple program that does not do much
 	mems.push_back(NOP);
+
 	mems.push_back(SET);
 	mems.push_back(0x3); // Set number for $80 to count up to
 	mems.push_back(0x81); // Store that number in $81
+
 	mems.push_back(INC); 
 	mems.push_back(0x80); // increment address $80 by 1
+
 	mems.push_back(CMP);
 	mems.push_back(0x80); // Compare $80 and $81
 	mems.push_back(0x81);
-	mems.push_back(BEQ); // If they are not yet equal, go back to 0x04
+
+	mems.push_back(BNE); // If they are not yet equal, go back to 0x04
 	mems.push_back(0x04);
-	mems.push_back(ZFC);
+
 	mems.push_back(SET); // Set $80 to zero
 	mems.push_back(0x00);
 	mems.push_back(0x80);
+
 	mems.push_back(INC); // Increment the limit counter
 	mems.push_back(0x81);
+
+	mems.push_back(ZFC); // Clear zero flag
 	mems.push_back(BRA); // Go back to 0x04
 	mems.push_back(0x04);
 	

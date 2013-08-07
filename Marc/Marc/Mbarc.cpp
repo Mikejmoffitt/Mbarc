@@ -90,20 +90,20 @@ void Mbarc::act(unsigned char instr, unsigned char param1, unsigned char param2)
 		break;
 	case INC:
 		memory[param1] += 1;
-		overFlow = (memory[param1] == 0) ? true : false;
+		overFlow = (memory[param1] == 0);
 		pc++;
 		pc++;
 		break;
 	case DEC:
 		memory[param1] -= 1;
-		overFlow = (memory[param1] == UCHAR_MAX) ? true : false;
+		overFlow = (memory[param1] == UCHAR_MAX);
 		pc++;
 		pc++;
 		break;
 	case ADD:
 		prev = memory[param2];
 		memory[param2] += param1;
-		overFlow = (memory[param2] < prev) ? true : false;
+		overFlow = (memory[param2] < prev);
 		pc++;
 		pc++;
 		pc++;
@@ -111,7 +111,7 @@ void Mbarc::act(unsigned char instr, unsigned char param1, unsigned char param2)
 	case SUB:
 		prev = memory[param2];
 		memory[param2] -= param1;
-		overFlow = (memory[param2] > prev) ? true : false;
+		overFlow = (memory[param2] > prev);
 		pc++;
 		pc++;
 		pc++;
@@ -129,7 +129,13 @@ void Mbarc::act(unsigned char instr, unsigned char param1, unsigned char param2)
 		pc++;
 		break;
 	case CMP:
-		zeroFlag = (memory[param2] == param1) ? true : false;
+		zeroFlag = (memory[param2] == memory[param1]);
+		pc++;
+		pc++;
+		pc++;
+		break;
+	case NCP:
+		zeroFlag = (memory[param2] == param1);
 		pc++;
 		pc++;
 		pc++;
@@ -153,16 +159,16 @@ void Mbarc::act(unsigned char instr, unsigned char param1, unsigned char param2)
 		pc++;
 		break;
 	case BNE:
-		pc = zeroFlag ? pc : param1;
+		pc = zeroFlag ? pc+2 : param1;
 		break;
 	case BEQ:
-		pc = zeroFlag ? param1 : pc;
+		pc = zeroFlag ? param1 : pc+2;
 		break;
 	case JNE:
-		pc = zeroFlag ? pc : (pc + param1);
+		pc = zeroFlag ? pc+2 : (pc + param1);
 		break;
 	case JEQ:
-		pc = zeroFlag ? (pc + param1) : pc;
+		pc = zeroFlag ? (pc + param1) : pc+2;
 		break;
 	case LSL:
 		// Todo: use carry flag to capture the bit shifted out

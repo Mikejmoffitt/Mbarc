@@ -26,5 +26,6 @@
 #define OFS 0x14 // 1 bytes; Set overflow flag
 #define BRA 0x15 // 2 bytes; Branches to address 1
 #define JMP 0x16 // 2 bytes; Jumps to relativeaddress 1
+#define NCP 0x17 // 3 bytes; compare constant number 1 to address 2
 
 #endif INSTRUCTIONS_H
