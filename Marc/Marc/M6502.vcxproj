@@ -11,11 +11,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="M6502.cpp" />
+    <ClCompile Include="Marc.cpp" />
     <ClCompile Include="usageTest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="M6502.h" />
+    <ClInclude Include="instructions.h" />
+    <ClInclude Include="Marc.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E82ADE63-C507-41C3-AB03-A93E4A35A8B0}</ProjectGuid>

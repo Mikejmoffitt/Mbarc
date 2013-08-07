@@ -2,18 +2,24 @@
 #include <iostream>
 #include <Windows.h>
 
+#define MEMAMT 0x64
+
 int main(int argc, char **argv)
 {
-	unsigned short mem[0x65535];
+	unsigned char mem[MEMAMT];
 	Marc core = Marc(mem);
-	for (int i = 0x0; i < 0x65535; i++)
+	for (int i = 0x0; i < MEMAMT; i++)
 	{
 		mem[i] = 0;
 	}
 	std::cout << "Memory zeroed out." << std::endl;
-	for (int i = 0x0; i < 0x8; i++)
+	core.poke(0x32,0x80);
+	for (int i = 0x0; i < MEMAMT/4; i++)
 	{
-		std::cout << "Memory at address 0x" << i << " is " << (core.memory[i]) << std::endl;
+		std::cout << "0x" << std::hex << std::uppercase << (i*4) << " == 0x" << int((core.peek((i*4)))) << std::nouppercase << std::dec << "\t";
+		std::cout << "0x" << std::hex << std::uppercase << ((i*4)+1) << " == 0x" << int(core.peek((i*4)+1)) << std::nouppercase << std::dec << "\t";
+		std::cout << "0x" << std::hex << std::uppercase << ((i*4)+2) << " == 0x" << int(core.peek((i*4)+2)) << std::nouppercase << std::dec << "\t";
+		std::cout << "0x" << std::hex << std::uppercase << ((i*4)+3) << " == 0x" << int(core.peek((i*4)+3)) << std::nouppercase << std::dec << std::endl;
 	}
 	system("pause");
 }
