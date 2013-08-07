@@ -9,10 +9,10 @@
 #define DEC 0x02 // Decrement address given by 1
 #define ADD 0x03 // Add address 1 to address 2
 #define SUB 0x04 // Subtract address 1 from address 2
-#define MLT 0x05 // Multiply address 2 by address 1
-#define DIV 0x06 // Divide address 2 by address 1
+#define MLT 0x05 // Multiply address 2 by address 1 WARNING: does not yet trip overflow
+#define DIV 0x06 // Divide address 2 by address 1 WARNING: does not yet trip overflow
 #define CMP 0x07 // Compare address 2 and 1; set zero flag if they are equal.
-#define SET 0x08 // Set address 1 to value 2
+#define SET 0x08 // Set address 2 to value 1
 #define AND 0x09 // Logical AND address 1 to address 2 
 #define OR  0x0A // Logical OR address 1 to address 2
 #define BNE 0x0B // Branch if !zeroFlag to address 1
@@ -23,5 +23,7 @@
 #define LSR 0x10 // Logical shift right for address 1
 #define CZF 0x11 // Clear zero flag.
 #define SZF 0x12 // Set zero flag.
+#define COF 0x13 // Clear overflow flag.
+#define SOF 0x14 // Set overflow flag
 
 #endif INSTRUCTIONS_H

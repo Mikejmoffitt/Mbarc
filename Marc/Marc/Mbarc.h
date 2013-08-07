@@ -23,7 +23,8 @@ public:
 private:
 	unsigned char *memory;
 	unsigned int pc; // Program counter
-	unsigned bool zeroFlag;
+	bool zeroFlag;
+	bool overFlow;
 };
 
 #endif MBARC_H
