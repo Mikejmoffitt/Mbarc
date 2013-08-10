@@ -16,22 +16,26 @@ By Michael Moffitt
 #include "instructions.h"
 #include <limits>
 
+// 640k should be enough for anybody.
+#define MEM_AMT ((USHRT_MAX+1) * 5)
+
+
 class Mbarc
 {
 public:
 	Mbarc();
-	unsigned char peek(unsigned int addr);
-	void poke(unsigned int addr, unsigned char val);
-	unsigned char getInstr(std::string friendlyName);
-	void act(unsigned char instr, unsigned char param1, unsigned char param2);
+	unsigned short peek(unsigned int addr);
+	void poke(unsigned int addr, unsigned short val);
+	void act(unsigned short instr, unsigned short param1, unsigned short param2);
 	void spill(bool verbose); // Prints status info, verbose prints EVERYTHING
 	void run();
 	bool isOver();
 private:
-	unsigned char memory[UCHAR_MAX+1];
-	unsigned char pc; // Program counter
+	unsigned short memory[MEM_AMT];
+	unsigned short pc; // Program counter
 	bool zeroFlag;
 	bool overFlow;
+	unsigned short sp; // Stack pointer
 };
 
 #endif MBARC_H

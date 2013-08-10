@@ -8,11 +8,11 @@ By Michael Moffitt
 #include "Mbarc.h"
 Mbarc::Mbarc()
 {
-	for (int i = 0; i < UCHAR_MAX+1; i++)
+	for (int i = 0; i < USHRT_MAX+1; i++)
 	{
 		memory[i] = 0;
 	}
-	pc = 0x00;
+	pc = 0x0000;
 	overFlow = false;
 	zeroFlag = false;
 	spill(false);
@@ -29,18 +29,18 @@ void Mbarc::spill(bool verbose)
 	std::stringstream lineStr;
 	if (verbose)
 	{
-		std::cout << std::endl << "[Literally all of the memory]" << ":" << std::endl << std::endl;
+		std::cout << std::endl << "[First page]" << ":" << std::endl << std::endl;
 		for (int i = 0; i < (UCHAR_MAX/NUM_PER_LINE)+1; i++)
 		{
 			for (int j = i*NUM_PER_LINE; j < (i*NUM_PER_LINE) + NUM_PER_LINE; j++)
 			{
 				if (pc == j)
 				{
-					lineStr << "*$" << std::hex << j << std::uppercase << " " << std::hex << int(memory[j]) << std::nouppercase << std::dec << "\t";
+					lineStr << "*" << std::hex << int(memory[j]) << std::nouppercase << std::dec << "\t";
 				}
 				else
 				{
-					lineStr << " $" << std::hex << j << std::uppercase << " " << std::hex << int(memory[j]) << std::nouppercase << std::dec << "\t";
+					lineStr << " " << std::hex << int(memory[j]) << std::nouppercase << std::dec << "\t";
 				}
 				
 			}
@@ -50,12 +50,12 @@ void Mbarc::spill(bool verbose)
 	std::cout << lineStr.str() << std::endl;
 }
 
-unsigned char Mbarc::peek(unsigned int addr)
+unsigned short Mbarc::peek(unsigned int addr)
 {
 	return memory[addr];
 }
 
-void Mbarc::poke(unsigned int addr, unsigned char val)
+void Mbarc::poke(unsigned int addr, unsigned short val)
 {
 	memory[addr] = val;
 }
@@ -67,12 +67,16 @@ void Mbarc::run()
 
 bool Mbarc::isOver()
 {
-	return (memory[pc] == 0xFF);
+	return (memory[pc] == 0xFFFF);
 }
 
-void Mbarc::act(unsigned char instr, unsigned char param1, unsigned char param2)
+void Mbarc::act(unsigned short instr, unsigned short param1, unsigned short param2)
 {
-	unsigned char prev;
+	unsigned char param80 = param1%256; // Lower 8 bits of param1
+	unsigned char param81 = param1/256; // Upper 8 bits of param1
+	unsigned char param82 = param2%256; // Lower 8 bits of param2
+	unsigned char param83 = param2/256; // Upper 8 bits of param2
+	unsigned short prev;
 	std::string outMsg = "";
 	switch (instr)
 	{
@@ -89,7 +93,7 @@ void Mbarc::act(unsigned char instr, unsigned char param1, unsigned char param2)
 		break;
 	case DEC:
 		memory[param1] -= 1;
-		overFlow = (memory[param1] == UCHAR_MAX);
+		overFlow = (memory[param1] == USHRT_MAX);
 		pc++;
 		pc++;
 		break;

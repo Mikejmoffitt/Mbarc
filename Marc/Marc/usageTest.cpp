@@ -9,9 +9,9 @@
 int main(int argc, char **argv)
 {
 	Mbarc core = Mbarc();
-	std::vector<unsigned char> mems;
+	std::vector<unsigned short> mems;
 	std::string file = "";
-	std::string progContents;
+	std::string progContents = "";
 	if (argc > 1)
 	{
 		file = argv[1];
@@ -21,30 +21,24 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		std::cout << "No file specified, running mindless program..." << std::endl;
-		core.poke(0x64,0x2F);
-		core.poke(0x63,0x3A);
-		core.poke(0x0,LSL);
-		core.poke(0x1,0x64);
-		core.poke(0x2,ZFC);
-		core.poke(0x3,NCP);
-		core.poke(0x4,0);
-		core.poke(0x5,0x64);
-		core.poke(0x6,BNE);
-		core.poke(0x7,0x00);
-		core.poke(0x8,INC);
-		core.poke(0x9,0x63);
-		core.poke(0xA,MOV);
-		core.poke(0xB,0x63);
-		core.poke(0xC,0x64);
-		core.poke(0xD,ZFC);
-		core.poke(0xE,BRA);
-		core.poke(0xF,0x00);
+		std::cout << "No file specified... " << std::endl;
 	}
-
+	unsigned short twoBytes = 0;
 	for (unsigned int i = 0; i < progContents.size(); i++)
 	{
-		core.poke(i,progContents[i]);
+		// Fixes the fact that getine wants to treat everything as signed chars - trust me it needs it
+		progContents[i] = progContents[i] - 0x80;
+		std::cout << twoBytes << std::endl;
+		if (i%2 == 0)
+		{
+			twoBytes += (((progContents[i])+0x80) << 8);
+		}
+		if (i%2 == 1)
+		{
+			twoBytes += (progContents[i]+0x80);
+			core.poke(i/2,twoBytes);
+			twoBytes = 0;
+		}
 	}
 	// Print info on initial state
 	core.spill(true);
