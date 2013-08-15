@@ -28,7 +28,7 @@
 #define i_speek 0x0018 //		{op}[A]			// Put top of stack at A, don't pop it off
 #define i_setsp 0x0019 //		{op}[A]			// Set stack pointer to address A
 #define i_spill 0x001A //		{op}[A}			// brings up memory viewer from A
-#define i_print 0x001B //		{op}[A]			// Print from address A onwards until 0xDEAD (aligned to even byte)
+#define i_print 0x001B //		{op}[A][B}		// Print from address A, B chars
 #define i_inint 0x001C //		{op}[A]			// Prompt for user input, store integer at A
 #define i_instr 0x001D //		{op}[A]			// Prompt for user input, store string starting at A
 #define i_and   0x001E //	    {op}[A][B]		// AND value at B with value at A

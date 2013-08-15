@@ -189,25 +189,25 @@ void Mbarc::act(unsigned short instrct, unsigned short param1, unsigned short pa
 	case i_bgt:
 		memory[sp] = pc;
 		sp++;
-		pc = (comparison<0) ? param1 : pc+2;
+		pc = (comparison>0) ? param1 : pc+2;
 		pcinc = 0;
 		break;
 	case i_blt:
 		memory[sp] = pc;
 		sp++;
-		pc = (comparison>0) ? param1 : pc+2;
+		pc = (comparison<0) ? param1 : pc+2;
 		pcinc = 0;
 		break;
 	case i_bge:
 		memory[sp] = pc;
 		sp++;
-		pc = (comparison<=0) ? param1 : pc+2;
+		pc = (comparison>=0) ? param1 : pc+2;
 		pcinc = 0;
 		break;
 	case i_ble:
 		memory[sp] = pc;
 		sp++;
-		pc = (comparison>=0) ? param1 : pc+2;
+		pc = (comparison<=0) ? param1 : pc+2;
 		pcinc = 0;
 		break;
 
@@ -225,19 +225,19 @@ void Mbarc::act(unsigned short instrct, unsigned short param1, unsigned short pa
 		pcinc = 0;
 		break;
 	case i_jgt:
-		pc = (comparison<0) ? param1 : pc+2;
-		pcinc = 0;
-		break;
-	case i_jlt:
 		pc = (comparison>0) ? param1 : pc+2;
 		pcinc = 0;
 		break;
+	case i_jlt:
+		pc = (comparison<0) ? param1 : pc+2;
+		pcinc = 0;
+		break;
 	case i_jge:
-		pc = (comparison<=0) ? param1 : pc+2;
+		pc = (comparison>=0) ? param1 : pc+2;
 		pcinc = 0;
 		break;
 	case i_jle:
-		pc = (comparison>=0) ? param1 : pc+2;
+		pc = (comparison<=0) ? param1 : pc+2;
 		pcinc = 0;
 		break;
 
@@ -271,14 +271,12 @@ void Mbarc::act(unsigned short instrct, unsigned short param1, unsigned short pa
 		pcinc = 2;
 		break;
 	case i_print:
-		while(memory[input] != 0xDEAD)
+		for (unsigned short i = 0; i < (param2/2); i++)
 		{
-			outStr << char(memory[input]%256);
-			outStr << char((memory[input] >> 2)%256);
-			input += 1;
+			std::cout << char((memory[i+param1] >> 8) & 0x00FF);
+			std::cout << char(memory[i+param1] & 0x00FF);
 		}
-		std::cout << outStr.str();
-		pcinc = 2;
+		pcinc = 3;
 		break;
 	case i_inint:
 		std::cin >> input;

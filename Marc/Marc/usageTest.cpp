@@ -42,12 +42,16 @@ int main(int argc, char **argv)
 	// Print info on initial state
 	bool runForever = false;
 	std::cout << "Loaded." << std::endl;
+		char input = 'x';
 	while (!core.isOver())
 	{
 		// ONE MILLION NEWLINES
 		//std::cout << std::string( 100, '\n' );
+		if (input == 's')
+		{
+			//core.spill(0x0);
+		}
 		core.run();
-		char input = 'x';
 		if (!runForever)
 		{
 			while (input != 's' && input != 'q' && input != 'a' && input != 'f')
@@ -58,16 +62,12 @@ int main(int argc, char **argv)
 			}
 			if (input == 'f')
 			{
-				runForever = true;
+				//runForever = true;
 			}
 			else if (input == 'q')
 			{
 				break;
 			}
-		}
-		if (input == 's')
-		{
-			core.spill(0x0);
 		}
 	}
 	std::cout << "The program has ended successfully." << std::endl;
