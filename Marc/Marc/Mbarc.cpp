@@ -14,39 +14,46 @@ Mbarc::Mbarc()
 	}
 	pc = 0x0000;
 	overFlow = false;
-	zeroFlag = false;
+	comparison = 0;
+	sp = 0;
+	remainder = 0;
 	spill(false);
 }
 
 #define NUM_PER_LINE 8
+#define NUM_LINES 15
 
-void Mbarc::spill(bool verbose)
+void Mbarc::spill(unsigned int start)
 {
-	std::cout << std::endl << "[Status]" << ":" << std::endl;
+	std::cout << std::endl << "[Status]" << std::endl;
 	std::cout << "  " << "PC:\t\t " << "$" << std::hex << (int)pc << std::endl;
+	std::cout << "  " << "SP:\t\t " << "$" << std::hex << (int)sp << std::endl;
 	std::cout << "  " << "Overflow:\t " << overFlow << std::endl;
-	std::cout << "  " << "Zero:\t\t " << zeroFlag << std::endl;
+	std::cout << "  " << "Comparison:\t\t " << comparison << std::endl;
 	std::stringstream lineStr;
-	if (verbose)
+	std::cout << std::endl << "[From $" << std::hex << start << "]" << std::endl << std::endl;
+	for (int i = 0; i < NUM_LINES; i++)
 	{
-		std::cout << std::endl << "[First page]" << ":" << std::endl << std::endl;
-		for (int i = 0; i < (UCHAR_MAX/NUM_PER_LINE)+1; i++)
+		lineStr << "[ $" << std::hex << start + (i*NUM_PER_LINE) << "\t]\t";
+		for (int j = i*NUM_PER_LINE; j < (i*NUM_PER_LINE) + NUM_PER_LINE; j++)
 		{
-			for (int j = i*NUM_PER_LINE; j < (i*NUM_PER_LINE) + NUM_PER_LINE; j++)
+			if (pc == j+start)
 			{
-				if (pc == j)
-				{
-					lineStr << "*" << std::hex << int(memory[j]) << std::nouppercase << std::dec << "\t";
-				}
-				else
-				{
-					lineStr << " " << std::hex << int(memory[j]) << std::nouppercase << std::dec << "\t";
-				}
-				
+				lineStr << "*" << int(memory[j+start]);
 			}
-			lineStr << std::endl;
+			else
+			{
+				lineStr << " " << int(memory[j+start]);
+			}
+			if (j != (i*NUM_PER_LINE) + NUM_PER_LINE - 1)
+			{
+				lineStr << "\t";
+			}
+				
 		}
+		lineStr << std::endl;
 	}
+	
 	std::cout << lineStr.str() << std::endl;
 }
 
@@ -70,136 +77,228 @@ bool Mbarc::isOver()
 	return (memory[pc] == 0xFFFF);
 }
 
-void Mbarc::act(unsigned short instr, unsigned short param1, unsigned short param2)
+void Mbarc::act(unsigned short instrct, unsigned short param1, unsigned short param2)
 {
 	unsigned char param80 = param1%256; // Lower 8 bits of param1
 	unsigned char param81 = param1/256; // Upper 8 bits of param1
 	unsigned char param82 = param2%256; // Lower 8 bits of param2
 	unsigned char param83 = param2/256; // Upper 8 bits of param2
+	unsigned short input = 0;
 	unsigned short prev;
+		std::stringstream outStr;
 	std::string outMsg = "";
-	switch (instr)
+	unsigned short pcinc = 1;
+	switch (instrct)
 	{
-	case END:
+		//  Basic arithmatic
+	case i_add:
+		prev = memory[param2];
+		memory[param2] += memory[param1];
+		overFlow = (prev > memory[param2]);
+		pcinc = 3;
 		break;
-	case NOP:
-		pc++;
-		break;
-	case INC:
-		memory[param1] += 1;
-		overFlow = (memory[param1] == 0);
-		pc++;
-		pc++;
-		break;
-	case DEC:
-		memory[param1] -= 1;
-		overFlow = (memory[param1] == USHRT_MAX);
-		pc++;
-		pc++;
-		break;
-	case ADD:
+	case i_addi:
 		prev = memory[param2];
 		memory[param2] += param1;
-		overFlow = (memory[param2] < prev);
-		pc++;
-		pc++;
-		pc++;
+		overFlow = (prev > memory[param2]);
+		pcinc = 3;
 		break;
-	case SUB:
+	case i_sub:
+		prev = memory[param2];
+		memory[param2] -= memory[param1];
+		overFlow = (prev < memory[param2]);
+		pcinc = 3;
+		break;
+	case i_subi:
 		prev = memory[param2];
 		memory[param2] -= param1;
-		overFlow = (memory[param2] > prev);
-		pc++;
-		pc++;
-		pc++;
+		overFlow = (prev < memory[param2]);
+		pcinc = 3;
 		break;
-	case MLT:
+	case i_mlt:
+		memory[param2] = memory[param2] * memory[param1];
+		pcinc = 3;
+		break;
+	case i_mlti:
 		memory[param2] = memory[param2] * param1;
-		pc++;
-		pc++;
-		pc++;
+		pcinc = 3;
 		break;
-	case DIV:
+	case i_div:
+		remainder = memory[param2]%memory[param1];
+		memory[param2] = memory[param2] / memory[param1];
+		pcinc = 3;
+		break;
+	case i_divi:
+		remainder = memory[param2]%param1;
 		memory[param2] = memory[param2] / param1;
-		pc++;
-		pc++;
-		pc++;
+		pcinc = 3;
 		break;
-	case CMP:
-		zeroFlag = (memory[param2] == memory[param1]);
-		pc++;
-		pc++;
-		pc++;
+	case i_cmp:
+		// Comparison will be >0 if aA > aB
+		comparison = (int(memory[param1]) - int(memory[param2]));
+		pcinc = 3;
 		break;
-	case NCP:
-		zeroFlag = (memory[param2] == param1);
-		pc++;
-		pc++;
-		pc++;
+	case i_cmpi:
+		// Comparison will be >0 if aA > iB
+		comparison = (int(memory[param1]) - int(param2));
+		pcinc = 3;
 		break;
-	case MOV:
+	case i_clear:
+		comparison = 0;
+		break;
+	case i_mov:
+		memory[param2] = memory[param1];
+		pcinc = 3;
+		break;
+	case i_movi:
 		memory[param2] = param1;
-		pc++;
-		pc++;
-		pc++;
+		pcinc = 3;
 		break;
-	case AND:
-		memory[param2] = memory[param2] & param1;
-		pc++;
-		pc++;
-		pc++;
-		break;
-	case OR:
-		memory[param2] = memory[param2] | param1;
-		pc++;
-		pc++;
-		pc++;
-		break;
-	case BNE:
-		pc = zeroFlag ? pc+2 : param1;
-		break;
-	case BEQ:
-		pc = zeroFlag ? param1 : pc+2;
-		break;
-	case JNE:
-		pc = zeroFlag ? pc+2 : (pc + param1);
-		break;
-	case JEQ:
-		pc = zeroFlag ? (pc + param1) : pc+2;
-		break;
-	case LSL:
-		// Todo: use carry flag to capture the bit shifted out
-		memory[param1] = memory[param1] << 1;
-		pc++;
-		pc++;
-		break;
-	case LSR:
-		// Todo: use carry flag to capture the bit shifted out
-		memory[param1] = memory[param1] >> 1;
-		pc++;
-		pc++;
-		break;
-	case ZFC:
-		zeroFlag = false;
-		pc++;
-		break;
-	case ZFS:
-		zeroFlag = true;
-		pc++;
-		break;
-	case OFC:
-		overFlow = false;
-		pc++;
-		break;
-	case OFS:
-		overFlow = true;
-		pc++;
-		break;
-	case BRA:
+	case i_bra:
+		memory[sp] = pc;
+		sp++;
 		pc = param1;
+		pcinc = 0;
 		break;
-	case JMP:
-		pc += param1;
+	case i_bne:
+		memory[sp] = pc;
+		sp++;
+		pc = (comparison==0) ? pc+2 : param1;
+		pcinc = 0;
+		break;
+	case i_beq:
+		memory[sp] = pc;
+		sp++;
+		pc = (comparison!=0) ? pc+2 : param1;
+		pcinc = 0;
+		break;
+	case i_bgt:
+		memory[sp] = pc;
+		sp++;
+		pc = (comparison<0) ? param1 : pc+2;
+		pcinc = 0;
+		break;
+	case i_blt:
+		memory[sp] = pc;
+		sp++;
+		pc = (comparison>0) ? param1 : pc+2;
+		pcinc = 0;
+		break;
+	case i_bge:
+		memory[sp] = pc;
+		sp++;
+		pc = (comparison<=0) ? param1 : pc+2;
+		pcinc = 0;
+		break;
+	case i_ble:
+		memory[sp] = pc;
+		sp++;
+		pc = (comparison>=0) ? param1 : pc+2;
+		pcinc = 0;
+		break;
+
+		
+	case i_jra:
+		pc = param1;
+		pcinc = 0;
+		break;
+	case i_jne:
+		pc = (comparison==0) ? pc+2 : param1;
+		pcinc = 0;
+		break;
+	case i_jeq:
+		pc = (comparison!=0) ? pc+2 : param1;
+		pcinc = 0;
+		break;
+	case i_jgt:
+		pc = (comparison<0) ? param1 : pc+2;
+		pcinc = 0;
+		break;
+	case i_jlt:
+		pc = (comparison>0) ? param1 : pc+2;
+		pcinc = 0;
+		break;
+	case i_jge:
+		pc = (comparison<=0) ? param1 : pc+2;
+		pcinc = 0;
+		break;
+	case i_jle:
+		pc = (comparison>=0) ? param1 : pc+2;
+		pcinc = 0;
+		break;
+
+	case i_pushi:
+		memory[sp] = param1;
+		sp++;
+		pcinc = 2;
+		break;
+	case i_push:
+		memory[sp] = memory[param1];
+		sp++;
+		pcinc = 2;
+		break;
+	case i_pop:
+		sp--;
+		memory[param1] = memory[sp];
+		pcinc = 2;
+		break;
+	case i_speek:
+		sp--;
+		memory[param1] = memory[sp];
+		sp++;
+		pcinc = 2;
+		break;
+	case i_setsp:
+		sp = param1;
+		pcinc = 2;
+		break;
+	case i_spill:
+		spill(param1);
+		pcinc = 2;
+		break;
+	case i_print:
+		while(memory[input] != 0xDEAD)
+		{
+			outStr << char(memory[input]%256);
+			outStr << char((memory[input] >> 2)%256);
+			input += 1;
+		}
+		std::cout << outStr.str();
+		pcinc = 2;
+		break;
+	case i_inint:
+		std::cin >> input;
+		memory[param1] = input;
+		pcinc = 2;
+		break;
+	case i_instr:
+		std::cout << "not yet lol" << std::endl;
+		pcinc = 2;
+		break;
+	case i_and:
+		memory[param2] = memory[param2] & memory[param1];
+		pcinc = 3;
+		break;
+	case i_andi:
+		memory[param2] = memory[param2] & param1;
+		pcinc = 3;
+		break;
+	case i_or:
+		memory[param2] = memory[param2] | memory[param1];
+		pcinc = 3;
+		break;
+	case i_ori:
+		memory[param2] = memory[param2] | param1;
+		pcinc = 3;
+		break;
+	case i_lsl:
+		memory[param2] = memory[param2] << param1;
+		pcinc = 3;
+		break;
+	case i_lsr:
+		memory[param2] = memory[param2] >> param1;
+		pcinc = 3;
 		break;
 	}
+	pc += pcinc;
 }

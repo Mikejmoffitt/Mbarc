@@ -19,23 +19,23 @@ By Michael Moffitt
 // 640k should be enough for anybody.
 #define MEM_AMT ((USHRT_MAX+1) * 5)
 
-
 class Mbarc
 {
 public:
 	Mbarc();
 	unsigned short peek(unsigned int addr);
 	void poke(unsigned int addr, unsigned short val);
-	void act(unsigned short instr, unsigned short param1, unsigned short param2);
-	void spill(bool verbose); // Prints status info, verbose prints EVERYTHING
+	void act(unsigned short instrct, unsigned short param1, unsigned short param2);
+	void spill(unsigned int start); // Prints status info, verbose prints EVERYTHING
 	void run();
 	bool isOver();
 private:
 	unsigned short memory[MEM_AMT];
-	unsigned short pc; // Program counter
-	bool zeroFlag;
+	unsigned int pc; // Program counter
+	signed int comparison;
 	bool overFlow;
-	unsigned short sp; // Stack pointer
+	unsigned int sp; // Stack pointer
+	unsigned short remainder; // For doing mod stuff
 };
 
 #endif MBARC_H

@@ -28,7 +28,6 @@ int main(int argc, char **argv)
 	{
 		// Fixes the fact that getine wants to treat everything as signed chars - trust me it needs it
 		progContents[i] = progContents[i] - 0x80;
-		std::cout << twoBytes << std::endl;
 		if (i%2 == 0)
 		{
 			twoBytes += (((progContents[i])+0x80) << 8);
@@ -41,20 +40,19 @@ int main(int argc, char **argv)
 		}
 	}
 	// Print info on initial state
-	core.spill(true);
 	bool runForever = false;
+	std::cout << "Loaded." << std::endl;
 	while (!core.isOver())
 	{
 		// ONE MILLION NEWLINES
-		std::cout << std::string( 100, '\n' );
+		//std::cout << std::string( 100, '\n' );
 		core.run();
-		core.spill(true);
 		char input = 'x';
 		if (!runForever)
 		{
-			while (input != 's' && input != 'q' && input != 'f')
+			while (input != 's' && input != 'q' && input != 'a' && input != 'f')
 			{
-				std::cout << " Enter s to step, q to quit, or f to run without waiting (may run forever).";
+				std::cout << " Enter a to step, s to spill, q to quit, or f to run without waiting (may run forever).";
 				std::cout << std::endl << ">>";
 				std::cin >> input;
 			}
@@ -66,6 +64,10 @@ int main(int argc, char **argv)
 			{
 				break;
 			}
+		}
+		if (input == 's')
+		{
+			core.spill(0x0);
 		}
 	}
 	std::cout << "The program has ended successfully." << std::endl;
