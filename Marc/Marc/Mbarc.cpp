@@ -29,7 +29,7 @@ void Mbarc::spill(unsigned int start)
 	std::cout << "  " << "PC:\t\t " << "$" << std::hex << (int)pc << std::endl;
 	std::cout << "  " << "SP:\t\t " << "$" << std::hex << (int)sp << std::endl;
 	std::cout << "  " << "Overflow:\t " << overFlow << std::endl;
-	std::cout << "  " << "Comparison:\t\t " << comparison << std::endl;
+	std::cout << "  " << "Comparison:\t\t " << std::dec << comparison << std::endl;
 	std::stringstream lineStr;
 	std::cout << std::endl << "[From $" << std::hex << start << "]" << std::endl << std::endl;
 	for (int i = 0; i < NUM_LINES; i++)
@@ -134,13 +134,27 @@ void Mbarc::act(unsigned short instrct, unsigned short param1, unsigned short pa
 		pcinc = 3;
 		break;
 	case i_cmp:
-		// Comparison will be >0 if aA > aB
-		comparison = (int(memory[param1]) - int(memory[param2]));
+		comparison = 0;
+		if (memory[param2] > memory[param1])
+		{
+			comparison = 1;
+		}
+		else if (memory[param2] < memory[param1])
+		{
+			comparison = -1;
+		}
 		pcinc = 3;
 		break;
 	case i_cmpi:
-		// Comparison will be >0 if aA > iB
-		comparison = (int(memory[param1]) - int(param2));
+		comparison = 0;
+		if (memory[param2] > param1)
+		{
+			comparison = 1;
+		}
+		else if (memory[param2] < param1)
+		{
+			comparison = -1;
+		}
 		pcinc = 3;
 		break;
 	case i_clear:

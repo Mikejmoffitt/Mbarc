@@ -32,7 +32,7 @@ public:
 private:
 	unsigned short memory[MEM_AMT];
 	unsigned int pc; // Program counter
-	signed int comparison;
+	short comparison;
 	bool overFlow;
 	unsigned int sp; // Stack pointer
 	unsigned short remainder; // For doing mod stuff

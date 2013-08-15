@@ -16,12 +16,12 @@
 #define i_movi  0x000C //		{op}[A][B]		// Put value A into address B
 #define i_mov   0x000D //		{op}[A][B]		// put value at A into address B
 #define i_bra   0x000E //		{op}[A]			// Push PC to stack, go to address A
-#define i_beq   0x000F //		{op}[A]			// Go to address A if A was equal to B
-#define i_bne   0x0010 //		{op}[A]			// Go to address A if A was not equal to B
-#define i_bgt   0x0011 //		{op}[A]			// Go to address A if A was greater than B
-#define i_blt   0x0012 //		{op}[A]			// Go to address A if A was less than B
-#define i_bge   0x0013 //		{op}[A]			// Go to address A if A was greater / equal to B
-#define i_ble   0x0014 //		{op}[A]			// Go to address A if A was less / equal to B
+#define i_beq   0x000F //		{op}[A]			// Go to address A if B was equal to A
+#define i_bne   0x0010 //		{op}[A]			// Go to address A if B was not equal to A
+#define i_bgt   0x0011 //		{op}[A]			// Go to address A if B was greater than A
+#define i_blt   0x0012 //		{op}[A]			// Go to address A if B was less than A
+#define i_bge   0x0013 //		{op}[A]			// Go to address A if B was greater / equal to A
+#define i_ble   0x0014 //		{op}[A]			// Go to address A if B was less / equal to A
 #define i_pushi 0x0015 //		{op}[A]			// Push value A onto stack
 #define i_push  0x0016 //		{op}[A]			// Push value at A onto stack
 #define i_pop	0x0017 //		{op}[A]			// Pop stack value onto address A
