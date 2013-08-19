@@ -1,0 +1,15 @@
+MBarc Stack Demo
+--------------------------------------------
+
+stack.bin illustrates functionality of the stack in MBarc. 
+
+Program:
+
+00190060	setsp	$0060		;set stack pointer to $0060
+000100010032	addi	#1,($0032)  	;add 1 to $0032
+00160032	push	($0032)		;push value at $0032 onto stack
+000900080032	cmpi	#8,($0032) 	;check 8 against $0032
+00320002	jle	($0002)		;if $0032 < 8 go back to $0002
+00190068	setsp	($0068)		;set stack pointer to $0064
+000c00000032	movei	#0,($0032)  	;set $0032 to 0
+002E0002	jra	($0002)		;go to $0002
