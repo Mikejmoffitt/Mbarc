@@ -8,7 +8,7 @@ By Michael Moffitt
 #include "Mbarc.h"
 Mbarc::Mbarc()
 {
-	for (int i = 0; i < USHRT_MAX+1; i++)
+	for (int i = 0; i < MEM_AMT; i++)
 	{
 		memory[i] = 0;
 	}
@@ -17,7 +17,6 @@ Mbarc::Mbarc()
 	comparison = 0;
 	sp = 0;
 	remainder = 0;
-	spill(false);
 }
 
 #define NUM_PER_LINE 8

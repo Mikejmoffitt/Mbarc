@@ -1,4 +1,4 @@
-#include "MBarc.h"
+#include "Mbarc.h"
 #include <iostream>
 #include <fstream>
 #include <limits>
@@ -12,10 +12,11 @@ int main(int argc, char **argv)
 	std::vector<unsigned short> mems;
 	std::string file = "";
 	std::string progContents = "";
+	// TODO: replace this looney-tunes file loader
 	if (argc > 1)
 	{
 		file = argv[1];
-		std::cout << "Loading from " << file << "." << std::endl;
+		std::cout << "Loading from " << file << "... ";
 		std::ifstream loadMe(file.c_str());
 		getline(loadMe,progContents);
 	}
@@ -26,7 +27,7 @@ int main(int argc, char **argv)
 	unsigned short twoBytes = 0;
 	for (unsigned int i = 0; i < progContents.size(); i++)
 	{
-		// Fixes the fact that getine wants to treat everything as signed chars - trust me it needs it
+		// Signed to unsigned fix...
 		progContents[i] = progContents[i] - 0x80;
 		if (i%2 == 0)
 		{
@@ -41,28 +42,30 @@ int main(int argc, char **argv)
 	}
 	// Print info on initial state
 	bool runForever = false;
-	std::cout << "Loaded." << std::endl;
-		char input = 'x';
+	std::cout << "ok." << std::endl;
+	core.spill(false);
+	char input = '\0';
 	while (!core.isOver())
 	{
-		// ONE MILLION NEWLINES
+		// ONE MILLION NEWLINES BECAUSE THERE IS NO CROSS PLATFORM "CLEAR" COMMAND
 		//std::cout << std::string( 100, '\n' );
 		if (input == 's')
 		{
-			//core.spill(0x0);
+			core.spill(0x0);
 		}
 		core.run();
+		input = '\0';
 		if (!runForever)
 		{
 			while (input != 's' && input != 'q' && input != 'a' && input != 'f')
 			{
-				std::cout << " Enter a to step, s to spill, q to quit, or f to run without waiting (may run forever).";
+				std::cout << " Enter s to step, a to step (no output), q to quit, or f to run without waiting (may run forever).";
 				std::cout << std::endl << ">>";
 				std::cin >> input;
 			}
 			if (input == 'f')
 			{
-				//runForever = true;
+				runForever = true;
 			}
 			else if (input == 'q')
 			{

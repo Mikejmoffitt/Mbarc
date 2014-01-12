@@ -1,6 +1,9 @@
 #ifndef INSTRUCTIONS_H
 #define INSTRUCTIONS_H
 
+// I know this naming scheme is ridiculous... forgive me, I didn't know 
+// much at the time.
+
 #define i_nop   0x0000 //		{op}			// Do nothing, waste some cycles
 #define i_addi  0x0001 //		{op}[A][B]		// Add value A to address B
 #define i_add   0x0002 //		{op}[A][B]		// Add value at A to address B
@@ -46,4 +49,4 @@
 #define i_jge   0x0033 //		{op}[A]			// Go to address A if A was greater / equal to B
 #define i_jle   0x0034 //		{op}[A]			// Go to address A if A was less / equal to B
 
-#endif INSTRUCTIONS_H
+#endif

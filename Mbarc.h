@@ -16,8 +16,7 @@ By Michael Moffitt
 #include "instructions.h"
 #include <limits>
 
-// 640k should be enough for anybody.
-#define MEM_AMT ((USHRT_MAX+1) * 5)
+#define MEM_AMT 4096
 
 class Mbarc
 {
@@ -38,4 +37,4 @@ private:
 	unsigned short remainder; // For doing mod stuff
 };
 
-#endif MBARC_H
+#endif
